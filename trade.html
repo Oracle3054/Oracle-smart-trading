@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oracle Trading | Trade</title>
+  <link rel="stylesheet" href="Resources/style_files/styles.css">
+  <!-- Lightweight Charts Library -->
+  <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+  
+  <!-- NAVBAR -->
+   <!-- HEADER -->
+  <header class="site-header">
+    <div class="container nav-inner">
+      <div class="logo">Oracle Trading</div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="trade.html">Trading</a>
+        <a href="markets.html">Markets</a>
+        <a href="portfolio.html">Platforms</a>
+        <a href="bot.html">Bot</a>
+        <a href="support.html">Support</a>
+      </nav>
+      <div class="auth-buttons">
+        <a href="login.html" class="btn login">Login</a>
+        <a href="signup.html" class="btn signup">Sign Up</a>
+      </div>
+    </div>
+  </header>
+    <!-- HERO -->
+
+  
+
+ <section class="container trading-section">
+  <h2>Live Trading Chart</h2>
+  <div id="chart-container" style="height: 500px;">
+    <div class="chart-ticker">
+      BTC/USD ↑ 2.4% | ETH/USD ↓ 1.1% | GOLD ↑ 0.8% | NASDAQ ↑ 0.5% | EUR/USD ↓ 0.3%
+    </div>
+  </div>
+</section>
+<script>
+// ======= Lightweight Charts Setup =======
+const chartContainer = document.getElementById('chart-container');
+const chart = LightweightCharts.createChart(chartContainer, {
+    width: chartContainer.clientWidth,
+    height: 500,
+    layout: {
+        backgroundColor: '#0f172a',
+        textColor: '#e2e8f0',
+    },
+    grid: {
+        vertLines: { color: '#1e293b' },
+        horzLines: { color: '#1e293b' },
+    },
+    crosshair: {
+        mode: LightweightCharts.CrosshairMode.Normal,
+    },
+    rightPriceScale: {
+        borderColor: '#1e293b',
+    },
+    timeScale: {
+        borderColor: '#1e293b',
+    },
+});
+
+const candleSeries = chart.addCandlestickSeries({
+    upColor: '#22c55e',
+    downColor: '#ef4444',
+    borderUpColor: '#22c55e',
+    borderDownColor: '#ef4444',
+    wickUpColor: '#22c55e',
+    wickDownColor: '#ef4444',
+});
+
+// ======= Initial Fake Data =======
+let data = [
+    { time: '2025-09-01', open: 100, high: 120, low: 95, close: 115 },
+    { time: '2025-09-02', open: 115, high: 125, low: 110, close: 120 },
+    { time: '2025-09-03', open: 120, high: 130, low: 115, close: 125 },
+    { time: '2025-09-04', open: 125, high: 135, low: 120, close: 130 },
+    { time: '2025-09-05', open: 130, high: 138, low: 125, close: 128 },
+];
+
+candleSeries.setData(data);
+
+// ======= Simulated Trading Signals =======
+const signals = [
+    { asset: 'BTC/USD', type: 'BUY', price: 128 },
+    { asset: 'BTC/USD', type: 'SELL', price: 132 },
+    { asset: 'BTC/USD', type: 'BUY', price: 129 },
+];
+
+// ======= Function to Simulate New Candle & Apply Signal =======
+function addNewCandle() {
+    const last = data[data.length - 1];
+    const nextTime = Math.floor(Date.now() / 1000); // timestamp in seconds
+    const open = last.close;
+    const close = open + (Math.random() * 10 - 5); // random up/down
+    const high = Math.max(open, close) + Math.random() * 3;
+    const low = Math.min(open, close) - Math.random() * 3;
+
+    const newCandle = { time: nextTime, open, high, low, close };
+    data.push(newCandle);
+    candleSeries.update(newCandle);
+
+    // Check if a signal triggers
+    signals.forEach(signal => {
+        if (Math.abs(close - signal.price) < 1) {
+            showSignalAlert(signal);
+        }
+    });
+}
+
+// ======= Display Signal =======
+function showSignalAlert(signal) {
+    const ticker = document.querySelector('.chart-ticker');
+    const msg = `${signal.type} SIGNAL TRIGGERED: ${signal.asset} @ ${signal.price}`;
+    const alertEl = document.createElement('div');
+    alertEl.textContent = msg;
+    alertEl.style.color = signal.type === 'BUY' ? '#22c55e' : '#ef4444';
+    alertEl.style.fontWeight = 'bold';
+    ticker.appendChild(alertEl);
+    ticker.scrollLeft = ticker.scrollWidth; // auto scroll
+}
+
+// ======= Simulate Live Trading =======
+setInterval(addNewCandle, 3000);
+
+// ======= Resize Chart on Window Resize =======
+window.addEventListener('resize', () => {
+    chart.resize(chartContainer.clientWidth, 500);
+});
+</script>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-nav">
+      <a href="index.html">Home</a>
+      <a href="trade.html">Trading</a>
+      <a href="markets.html">Markets</a>
+      <a href="porfolio.html">Platforms</a>
+      <a href="support.html">Support</a>
+    </div>
+    
+      <nav class="footer-nav">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="support.html">Support</a>
+      </nav>
+    </div>
+    <p>© 2025 Oracle Trading. All Rights Reserved.</p>
+  </footer>
+
+</body>
+</html>
